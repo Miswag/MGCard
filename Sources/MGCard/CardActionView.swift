@@ -19,6 +19,7 @@ internal final class CardActionView: UIView {
     private let widthStyle: AlertAction.WidthStyle
     private let height: CGFloat
     private var style: AlertAction.ButtonStyle
+    private let font: UIFont
     
     // MARK: - UI Components
     
@@ -46,6 +47,7 @@ internal final class CardActionView: UIView {
     ///   - icon: Optional SF Symbol icon name
     ///   - widthStyle: Width configuration (fixed or dynamic)
     ///   - height: Button height in points
+    ///   - font: The font for the button title (defaults to system font, medium weight, size 16)
     ///   - action: Closure to execute when button is tapped
     internal init(
         title: String,
@@ -53,12 +55,14 @@ internal final class CardActionView: UIView {
         icon: String? = nil,
         widthStyle: AlertAction.WidthStyle,
         height: CGFloat,
+        font: UIFont = UIFont.systemFont(ofSize: 16, weight: .medium),
         action: @escaping () -> Void
     ) {
         self.action = action
         self.widthStyle = widthStyle
         self.height = height
         self.style = style
+        self.font = font
         super.init(frame: .zero)
         
         setupView(title: title, style: style, icon: icon)
@@ -97,7 +101,7 @@ internal final class CardActionView: UIView {
     
     private func setupTitleLabel(title: String) {
         titleLabel.text = title
-        titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .medium)
+        titleLabel.font = font
         stackView.addArrangedSubview(titleLabel)
     }
     
