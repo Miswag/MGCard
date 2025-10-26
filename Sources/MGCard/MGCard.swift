@@ -218,6 +218,7 @@ public final class MGCard: UIView {
     ///   - height: The height of the button in points (default: 35)
     ///   - icon: Optional SF Symbol icon name
     ///   - canDismissAlert: Whether tapping this button should dismiss the card (default: true)
+    ///   - font: The font for the button title (defaults to system font, medium weight, size 16)
     ///   - action: Optional closure to execute when button is tapped
     /// - Returns: Self for method chaining
     @discardableResult
@@ -228,6 +229,7 @@ public final class MGCard: UIView {
         height: CGFloat = 35,
         icon: String? = nil,
         canDismissAlert: Bool = true,
+        font: UIFont? = nil,
         action: (() -> Void)? = nil
     ) -> MGCard {
         let internalStyle: AlertAction.ButtonStyle = {
@@ -252,6 +254,7 @@ public final class MGCard: UIView {
             height: height,
             icon: icon,
             canDismissAlert: canDismissAlert,
+            font: font ?? UIFont.systemFont(ofSize: 16, weight: .medium),
             action: action
         )
         return append(actionComponent)

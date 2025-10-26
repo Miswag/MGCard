@@ -196,6 +196,7 @@ internal final class AlertAction: AlertComponent {
     private let icon: String?
     private let canDismissAlert: Bool
     private let action: (() -> Void)?
+    private let font: UIFont
     
     /// Controls whether the button is enabled and interactive
     internal var isEnabled: Bool = true {
@@ -217,6 +218,7 @@ internal final class AlertAction: AlertComponent {
     ///   - height: Height in points (default: 35)
     ///   - icon: Optional SF Symbol icon name
     ///   - canDismissAlert: Whether button tap should dismiss the card (default: true)
+    ///   - font: The font for the button title (defaults to system font, medium weight, size 16)
     ///   - action: Optional closure to execute on tap
     internal init(
         title: String,
@@ -225,6 +227,7 @@ internal final class AlertAction: AlertComponent {
         height: CGFloat = 35,
         icon: String? = nil,
         canDismissAlert: Bool = true,
+        font: UIFont = UIFont.systemFont(ofSize: 16, weight: .medium),
         action: (() -> Void)? = nil
     ) {
         self.title = title
@@ -234,6 +237,7 @@ internal final class AlertAction: AlertComponent {
         self.icon = icon
         self.action = action
         self.canDismissAlert = canDismissAlert
+        self.font = font
     }
     
     // MARK: - AlertComponent
@@ -245,6 +249,7 @@ internal final class AlertAction: AlertComponent {
             icon: icon,
             widthStyle: width,
             height: height,
+            font: font,
             action: { [weak self] in
                 self?.handleButtonTap(dismissHandler: dismissHandler)
             }
