@@ -305,6 +305,9 @@ internal final class AlertTextView: NSObject, AlertComponent, UITextViewDelegate
     /// Callback for text changes
     internal var onTextChange: ((String?) -> Void)?
     
+    /// Reference to the submit action button for dynamic control
+    internal weak var submitAction: AlertAction?
+    
     /// Current text value (nil if showing placeholder)
     internal var textValue: String? {
         return textView.textColor == .placeholderText ? nil : textView.text
@@ -416,6 +419,25 @@ internal final class AlertTextView: NSObject, AlertComponent, UITextViewDelegate
     internal func textViewDidChange(_ textView: UITextView) {
         let text = textView.textColor == .placeholderText ? nil : textView.text
         onTextChange?(text)
+        
+        // Automatically control submit action button state
+        updateSubmitActionState(text: text)
+    }
+    
+    /// Updates the submit action button state based on text input
+    private func updateSubmitActionState(text: String?) {
+        guard let submitAction = submitAction else { return }
+        
+        let isEmpty = (text ?? "").trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+        submitAction.isEnabled = !isEmpty
+    }
+    
+    /// Sets the submit action button reference for automatic state control
+    internal func setSubmitAction(_ action: AlertAction?) {
+        self.submitAction = action
+        // Update state immediately based on current text
+        let currentText = textValue
+        updateSubmitActionState(text: currentText)
     }
     
     internal func textViewDidEndEditing(_ textView: UITextView) {

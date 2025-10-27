@@ -308,6 +308,67 @@ public final class MGCard: UIView {
         return append(textInputComponent)
     }
     
+    // MARK: - Component Linking API
+    
+    /// Links a text input with an action button for automatic state control
+    /// The action button will be enabled/disabled based on text input content
+    /// - Parameters:
+    ///   - textInputIndex: Index of the text input component (default: 0 for first text input)
+    ///   - actionIndex: Index of the action button component (default: 0 for first action)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func linkTextInputToAction(textInputIndex: Int = 0, actionIndex: Int = 0) -> MGCard {
+        // Find the text input and action components
+        let textInputComponents = components.compactMap { $0 as? AlertTextView }
+        let actionComponents = components.compactMap { $0 as? AlertAction }
+        
+        guard textInputIndex < textInputComponents.count,
+              actionIndex < actionComponents.count else {
+            return self
+        }
+        
+        let textInput = textInputComponents[textInputIndex]
+        let action = actionComponents[actionIndex]
+        
+        // Link them together
+        textInput.setSubmitAction(action)
+        
+        return self
+    }
+    
+    /// Gets the current text value from the first text input
+    /// - Returns: The current text value, or nil if no text input exists or is empty
+    public func getTextInputValue() -> String? {
+        let textInputComponents = components.compactMap { $0 as? AlertTextView }
+        return textInputComponents.first?.textValue
+    }
+    
+    /// Gets the current text value from a specific text input
+    /// - Parameter index: The index of the text input
+    /// - Returns: The current text value, or nil if no text input exists at that index or is empty
+    public func getTextInputValue(at index: Int) -> String? {
+        let textInputComponents = components.compactMap { $0 as? AlertTextView }
+        guard index >= 0 && index < textInputComponents.count else { return nil }
+        return textInputComponents[index].textValue
+    }
+    
+    /// Enables or disables the first action button
+    /// - Parameter enabled: Whether the button should be enabled
+    public func setActionEnabled(_ enabled: Bool) {
+        let actionComponents = components.compactMap { $0 as? AlertAction }
+        actionComponents.first?.isEnabled = enabled
+    }
+    
+    /// Enables or disables a specific action button
+    /// - Parameters:
+    ///   - index: The index of the action button to control
+    ///   - enabled: Whether the button should be enabled
+    public func setActionEnabled(at index: Int, enabled: Bool) {
+        let actionComponents = components.compactMap { $0 as? AlertAction }
+        guard index >= 0 && index < actionComponents.count else { return }
+        actionComponents[index].isEnabled = enabled
+    }
+    
     // MARK: - Presentation API
     
     /// Presents the card modally using the queue management system
