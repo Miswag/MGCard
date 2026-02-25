@@ -17,6 +17,8 @@ public enum ButtonStyle {
     case outlined(color: UIColor)
     /// Clear button with text color only
     case clear(color: UIColor)
+    /// Custom button with dynamic text, background, and border colors
+    case custom(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor?)
 }
 
 /// Width configuration options for action components
@@ -182,6 +184,7 @@ internal final class AlertAction: AlertComponent {
         case filled(color: UIColor)
         case outlined(color: UIColor)
         case clear(color: UIColor)
+        case custom(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor?)
     }
     
     internal enum WidthStyle {

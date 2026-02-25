@@ -199,6 +199,20 @@ Add text input fields with real-time validation and formatting:
 
 ## Button Styles
 
+### Custom Colors
+Create a button with customized text, background, and border colors:
+```swift
+.action(
+    title: "Got it!",
+    style: .custom(
+        textColor: .white,
+        backgroundColor: .systemPurple,
+        borderColor: .black
+    ),
+    width: .dynamic
+)
+```
+
 ### Filled Style
 ```swift
 .action(title: "Save", style: .filled(color: .blue), width: .dynamic)

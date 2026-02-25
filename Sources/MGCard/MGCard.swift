@@ -237,6 +237,8 @@ public final class MGCard: UIView {
             case .filled(let color): return .filled(color: color)
             case .outlined(let color): return .outlined(color: color)
             case .clear(let color): return .clear(color: color)
+            case .custom(let textColor, let backgroundColor, let borderColor): 
+                return .custom(textColor: textColor, backgroundColor: backgroundColor, borderColor: borderColor)
             }
         }()
         

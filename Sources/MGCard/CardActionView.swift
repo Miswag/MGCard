@@ -192,6 +192,8 @@ internal final class CardActionView: UIView {
             applyOutlinedStyle(color: color)
         case .clear(let color):
             applyClearStyle(color: color)
+        case .custom(let textColor, let backgroundColor, let borderColor):
+            applyCustomStyle(textColor: textColor, backgroundColor: backgroundColor, borderColor: borderColor)
         }
     }
     
@@ -222,5 +224,21 @@ internal final class CardActionView: UIView {
         layer.borderWidth = 0
         titleLabel.textColor = color
         iconImageView.tintColor = color
+    }
+    
+    private func applyCustomStyle(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor?) {
+        self.backgroundColor = backgroundColor ?? .clear
+        
+        if let borderColor = borderColor {
+            self.layer.borderWidth = 1
+            self.layer.borderColor = borderColor.cgColor
+        } else {
+            self.layer.borderWidth = 0
+        }
+        
+        if let textColor = textColor {
+            self.titleLabel.textColor = textColor
+            self.iconImageView.tintColor = textColor
+        }
     }
 }
