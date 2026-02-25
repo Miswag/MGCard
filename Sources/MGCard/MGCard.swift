@@ -84,6 +84,7 @@ public final class MGCard: UIView {
     private var dismissButtonCompletion: (() -> Void)?
     private var showDismissButton: Bool = false
     private var overlayStyle: OverlayStyle = .dimmed(alpha: 0.25)
+    private var cardBackgroundColor: UIColor = .white
     private var activeBlurView: UIVisualEffectView?
     
     /// SwiftUI integration callback for dismiss events
@@ -118,6 +119,16 @@ public final class MGCard: UIView {
     }
     
     // MARK: - Public Configuration API
+    
+    /// Configures the background color of the card container
+    /// - Parameter color: The desired background color (default: .white)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func backgroundColor(_ color: UIColor) -> MGCard {
+        self.cardBackgroundColor = color
+        self.alertContainerStackView.backgroundColor = color
+        return self
+    }
     
     /// Configures the background overlay style behind the card
     /// - Parameter style: The visual style (dimmed or blurred)
@@ -419,7 +430,7 @@ public final class MGCard: UIView {
     // MARK: - Setup Methods
     
     private func setupCard() {
-        alertContainerStackView.backgroundColor = .white
+        alertContainerStackView.backgroundColor = cardBackgroundColor
         setupDismissButton()
         setupAlertContainer()
     }
