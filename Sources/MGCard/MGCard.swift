@@ -85,6 +85,8 @@ public final class MGCard: UIView {
     private var showDismissButton: Bool = false
     private var overlayStyle: OverlayStyle = .dimmed(alpha: 0.25)
     private var cardBackgroundColor: UIColor = .white
+    private var cardBorderColor: UIColor?
+    private var cardBorderWidth: CGFloat = 0
     private var activeBlurView: UIVisualEffectView?
     
     /// SwiftUI integration callback for dismiss events
@@ -120,13 +122,22 @@ public final class MGCard: UIView {
     
     // MARK: - Public Configuration API
     
-    /// Configures the background color of the card container
-    /// - Parameter color: The desired background color (default: .white)
+    /// Configures the comprehensive styling of the card container
+    /// - Parameters:
+    ///   - backgroundColor: The background color of the card (default: .white)
+    ///   - borderColor: The Optional border color for the card
+    ///   - borderWidth: The border width applied if color is provided (default: 1.0)
     /// - Returns: Self for method chaining
     @discardableResult
-    public func backgroundColor(_ color: UIColor) -> MGCard {
-        self.cardBackgroundColor = color
-        self.alertContainerStackView.backgroundColor = color
+    public func cardStyle(
+        backgroundColor: UIColor = .white,
+        borderColor: UIColor? = nil,
+        borderWidth: CGFloat = 1.0
+    ) -> MGCard {
+        self.cardBackgroundColor = backgroundColor
+        self.cardBorderColor = borderColor
+        self.cardBorderWidth = borderWidth
+        self.applyCardStyle()
         return self
     }
     
@@ -430,9 +441,19 @@ public final class MGCard: UIView {
     // MARK: - Setup Methods
     
     private func setupCard() {
-        alertContainerStackView.backgroundColor = cardBackgroundColor
+        applyCardStyle()
         setupDismissButton()
         setupAlertContainer()
+    }
+    
+    private func applyCardStyle() {
+        alertContainerStackView.backgroundColor = cardBackgroundColor
+        if let borderColor = cardBorderColor {
+            alertContainerStackView.layer.borderColor = borderColor.cgColor
+            alertContainerStackView.layer.borderWidth = cardBorderWidth
+        } else {
+            alertContainerStackView.layer.borderWidth = 0
+        }
     }
     
     private func setupWindow(in windowScene: UIWindowScene) {

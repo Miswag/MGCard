@@ -254,7 +254,7 @@ Configure the dismiss button (X) in the top-right corner:
 
 ```swift
 MGCard()
-    .backgroundColor(UIColor.systemGray6)
+    .cardStyle(backgroundColor: .systemGray6, borderColor: .systemBlue, borderWidth: 2)
     .hasDismissButton(true)
     .dismissButtonAction {
         print("User dismissed the alert")
