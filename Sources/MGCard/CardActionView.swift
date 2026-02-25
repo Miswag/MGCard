@@ -75,6 +75,14 @@ internal final class CardActionView: UIView {
     
     // MARK: - UIView Overrides
     
+    override internal func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        
+        if case .full = widthStyle, let superview = superview {
+            widthAnchor.constraint(equalTo: superview.layoutMarginsGuide.widthAnchor).isActive = true
+        }
+    }
+    
     override internal func layoutSubviews() {
         super.layoutSubviews()
         layer.cornerRadius = height / 2
@@ -122,6 +130,8 @@ internal final class CardActionView: UIView {
             setupFixedWidthLayout(width: fixedWidth)
         case .dynamic:
             setupDynamicWidthLayout()
+        case .full:
+            setupFullWidthLayout()
         }
         
         NSLayoutConstraint.activate([
@@ -145,6 +155,13 @@ internal final class CardActionView: UIView {
             stackView.trailingAnchor.constraint(equalTo: trailingAnchor, constant: -20),
             stackView.topAnchor.constraint(equalTo: topAnchor),
             stackView.bottomAnchor.constraint(equalTo: bottomAnchor)
+        ])
+    }
+    
+    private func setupFullWidthLayout() {
+        NSLayoutConstraint.activate([
+            stackView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            stackView.centerXAnchor.constraint(equalTo: centerXAnchor)
         ])
     }
     

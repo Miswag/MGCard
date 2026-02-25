@@ -244,6 +244,7 @@ public final class MGCard: UIView {
             switch width {
             case .fixed(let value): return .fixed(value)
             case .dynamic: return .dynamic
+            case .full: return .full
             }
         }()
         

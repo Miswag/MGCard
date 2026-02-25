@@ -25,6 +25,8 @@ public enum WidthStyle {
     case fixed(CGFloat)
     /// Dynamic width that adjusts to content
     case dynamic
+    /// Full width of the card
+    case full
 }
 
 // MARK: - AlertComponent Protocol
@@ -185,6 +187,7 @@ internal final class AlertAction: AlertComponent {
     internal enum WidthStyle {
         case fixed(CGFloat)
         case dynamic
+        case full
     }
     
     // MARK: - Properties

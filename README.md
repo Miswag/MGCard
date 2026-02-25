@@ -228,6 +228,12 @@ Specific width in points:
 .action(title: "Fixed", style: .filled(color: .blue), width: .fixed(200))
 ```
 
+### Full Width
+Takes the entire width of the card:
+```swift
+.action(title: "Full Width", style: .filled(color: .blue), width: .full)
+```
+
 ## Dismiss Button
 
 Configure the dismiss button (X) in the top-right corner:
