@@ -83,6 +83,11 @@ public final class MGCard: UIView {
     private var dismissCompletion: (() -> Void)?
     private var dismissButtonCompletion: (() -> Void)?
     private var showDismissButton: Bool = false
+    private var overlayStyle: OverlayStyle = .dimmed(alpha: 0.25)
+    private var cardBackgroundColor: UIColor = .white
+    private var cardBorderColor: UIColor?
+    private var cardBorderWidth: CGFloat = 0
+    private var activeBlurView: UIVisualEffectView?
     
     /// SwiftUI integration callback for dismiss events
     internal var onDismiss: (() -> Void)?
@@ -116,6 +121,34 @@ public final class MGCard: UIView {
     }
     
     // MARK: - Public Configuration API
+    
+    /// Configures the comprehensive styling of the card container
+    /// - Parameters:
+    ///   - backgroundColor: The background color of the card (default: .white)
+    ///   - borderColor: The Optional border color for the card
+    ///   - borderWidth: The border width applied if color is provided (default: 1.0)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func cardStyle(
+        backgroundColor: UIColor = .white,
+        borderColor: UIColor? = nil,
+        borderWidth: CGFloat = 1.0
+    ) -> MGCard {
+        self.cardBackgroundColor = backgroundColor
+        self.cardBorderColor = borderColor
+        self.cardBorderWidth = borderWidth
+        self.applyCardStyle()
+        return self
+    }
+    
+    /// Configures the background overlay style behind the card
+    /// - Parameter style: The visual style (dimmed or blurred)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func overlay(style: OverlayStyle) -> MGCard {
+        self.overlayStyle = style
+        return self
+    }
     
     /// Configures whether the dismiss button (X) should be shown
     /// - Parameter show: Boolean indicating if the dismiss button should be visible
@@ -224,7 +257,7 @@ public final class MGCard: UIView {
     @discardableResult
     public func action(
         title: String,
-        style: ButtonStyle,
+        style: ButtonStyle = .filled(color: .systemBlue),
         width: WidthStyle,
         height: CGFloat = 35,
         icon: String? = nil,
@@ -237,6 +270,8 @@ public final class MGCard: UIView {
             case .filled(let color): return .filled(color: color)
             case .outlined(let color): return .outlined(color: color)
             case .clear(let color): return .clear(color: color)
+            case .custom(let textColor, let backgroundColor, let borderColor): 
+                return .custom(textColor: textColor, backgroundColor: backgroundColor, borderColor: borderColor)
             }
         }()
         
@@ -244,6 +279,7 @@ public final class MGCard: UIView {
             switch width {
             case .fixed(let value): return .fixed(value)
             case .dynamic: return .dynamic
+            case .full: return .full
             }
         }()
         
@@ -258,6 +294,65 @@ public final class MGCard: UIView {
             action: action
         )
         return append(actionComponent)
+    }
+    
+    /// Adds multiple action buttons arranged horizontally
+    /// - Parameters:
+    ///   - actions: An array of ActionConfig configurations representing each intended button
+    ///   - spacing: Spacing between the buttons (default: 8)
+    ///   - height: Height of the buttons (default: 35)
+    ///   - width: Top-level width configuration (default: .full)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func horizontalActions(
+        actions: [ActionConfig],
+        spacing: CGFloat = 8,
+        height: CGFloat = 35,
+        width: WidthStyle = .full
+    ) -> MGCard {
+        let mapStyle: (ButtonStyle) -> AlertAction.ButtonStyle = { style in
+            switch style {
+            case .filled(let color): return .filled(color: color)
+            case .outlined(let color): return .outlined(color: color)
+            case .clear(let color): return .clear(color: color)
+            case .custom(let textColor, let backgroundColor, let borderColor):
+                return .custom(textColor: textColor, backgroundColor: backgroundColor, borderColor: borderColor)
+            }
+        }
+        
+        let mapWidth: (WidthStyle) -> AlertAction.WidthStyle = { w in
+            switch w {
+            case .fixed(let value): return .fixed(value)
+            case .dynamic: return .dynamic
+            case .full: return .full
+            }
+        }
+        
+        var parsedActions: [AlertAction] = []
+        
+        for config in actions {
+            // Force .dynamic width for inner buttons so the horizontal stack view (which is .full) 
+            // can distribute the available width properly via .fillEqually
+            let alertAction = AlertAction(
+                title: config.title,
+                style: mapStyle(config.style),
+                width: .dynamic,
+                height: height,
+                icon: config.icon,
+                canDismissAlert: config.canDismissAlert,
+                font: config.font ?? UIFont.systemFont(ofSize: 16, weight: .medium),
+                action: config.action
+            )
+            parsedActions.append(alertAction)
+        }
+        
+        let horizontalComponent = AlertHorizontalAction(
+            actions: parsedActions,
+            spacing: spacing,
+            width: mapWidth(width)
+        )
+        
+        return append(horizontalComponent)
     }
     
     /// Adds a text input component to the card
@@ -405,9 +500,19 @@ public final class MGCard: UIView {
     // MARK: - Setup Methods
     
     private func setupCard() {
-        alertContainerStackView.backgroundColor = .white
+        applyCardStyle()
         setupDismissButton()
         setupAlertContainer()
+    }
+    
+    private func applyCardStyle() {
+        alertContainerStackView.backgroundColor = cardBackgroundColor
+        if let borderColor = cardBorderColor {
+            alertContainerStackView.layer.borderColor = borderColor.cgColor
+            alertContainerStackView.layer.borderWidth = cardBorderWidth
+        } else {
+            alertContainerStackView.layer.borderWidth = 0
+        }
     }
     
     private func setupWindow(in windowScene: UIWindowScene) {
@@ -435,7 +540,7 @@ public final class MGCard: UIView {
     }
     
     private func setupUI() {
-        setupDimmedBackground()
+        setupOverlayBackground()
         setupViewComponents()
     }
     
@@ -513,24 +618,73 @@ public final class MGCard: UIView {
         alertContainerStackView.isLayoutMarginsRelativeArrangement = true
     }
     
-    private func setupDimmedBackground() {
+    private func setupOverlayBackground() {
         guard let parentView = self.superview else { return }
         
-        dimmedBackgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.25)
-        dimmedBackgroundView.translatesAutoresizingMaskIntoConstraints = false
-        
-        parentView.insertSubview(dimmedBackgroundView, belowSubview: self)
-        
-        NSLayoutConstraint.activate([
-            dimmedBackgroundView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
-            dimmedBackgroundView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
-            dimmedBackgroundView.topAnchor.constraint(equalTo: parentView.topAnchor),
-            dimmedBackgroundView.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
-        ])
-        
-        dimmedBackgroundView.alpha = 0
-        UIView.animate(withDuration: 0.3) {
-            self.dimmedBackgroundView.alpha = 1
+        switch overlayStyle {
+        case .dimmed(let alpha):
+            dimmedBackgroundView.backgroundColor = UIColor.black.withAlphaComponent(alpha)
+            dimmedBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+            
+            parentView.insertSubview(dimmedBackgroundView, belowSubview: self)
+            
+            NSLayoutConstraint.activate([
+                dimmedBackgroundView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+                dimmedBackgroundView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+                dimmedBackgroundView.topAnchor.constraint(equalTo: parentView.topAnchor),
+                dimmedBackgroundView.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+            ])
+            
+            dimmedBackgroundView.alpha = 0
+            UIView.animate(withDuration: 0.3) {
+                self.dimmedBackgroundView.alpha = 1
+            }
+            
+        case .blur:
+            // 1. Soft Backdrop Blur (replicates backdrop-filter: blur(12px))
+            let blurEffect = UIBlurEffect(style: .systemUltraThinMaterial)
+            activeBlurView = UIVisualEffectView(effect: blurEffect)
+            
+            if let blurView = activeBlurView {
+                blurView.translatesAutoresizingMaskIntoConstraints = false
+                blurView.alpha = 0
+                parentView.insertSubview(blurView, belowSubview: self)
+                
+                NSLayoutConstraint.activate([
+                    blurView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+                    blurView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+                    blurView.topAnchor.constraint(equalTo: parentView.topAnchor),
+                    blurView.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+                ])
+                
+                UIView.animate(withDuration: 0.3) {
+                    blurView.alpha = 0.9
+                }
+            }
+            
+            // 2. Translucent Color Overlay (replicates background: rgba(0, 0, 0, 0.3))
+            // Lowered to 0.15 to prevent the `.systemUltraThinMaterial` from becoming too dark
+            // while still retaining a slight gray tint.
+            dimmedBackgroundView.backgroundColor = UIColor.black.withAlphaComponent(0.15)
+            dimmedBackgroundView.translatesAutoresizingMaskIntoConstraints = false
+            
+            if let blurView = activeBlurView {
+                parentView.insertSubview(dimmedBackgroundView, aboveSubview: blurView)
+            } else {
+                parentView.insertSubview(dimmedBackgroundView, belowSubview: self)
+            }
+            
+            NSLayoutConstraint.activate([
+                dimmedBackgroundView.leadingAnchor.constraint(equalTo: parentView.leadingAnchor),
+                dimmedBackgroundView.trailingAnchor.constraint(equalTo: parentView.trailingAnchor),
+                dimmedBackgroundView.topAnchor.constraint(equalTo: parentView.topAnchor),
+                dimmedBackgroundView.bottomAnchor.constraint(equalTo: parentView.bottomAnchor)
+            ])
+            
+            dimmedBackgroundView.alpha = 0
+            UIView.animate(withDuration: 0.3) {
+                self.dimmedBackgroundView.alpha = 1
+            }
         }
     }
     
@@ -547,6 +701,7 @@ public final class MGCard: UIView {
             animations: {
                 self.alpha = 0
                 self.dimmedBackgroundView.alpha = 0
+                self.activeBlurView?.alpha = 0
             },
             completion: { _ in
                 self.cleanup()
@@ -557,11 +712,12 @@ public final class MGCard: UIView {
     private func cleanup() {
         removeFromSuperview()
         dimmedBackgroundView.removeFromSuperview()
+        activeBlurView?.removeFromSuperview()
+        activeBlurView = nil
         alertWindow?.isHidden = true
         alertWindow = nil
         
         onDismiss?()
         dismissCompletion?()
-        dismissCompletion = nil
     }
 }

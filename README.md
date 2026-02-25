@@ -168,6 +168,18 @@ Create interactive buttons with various styles:
 )
 ```
 
+### Horizontal Actions
+You can easily arrange multiple action buttons side-by-side using `.horizontalAction` and passing an array of `ActionConfig`:
+```swift
+MGCard()
+    .text(title: "Delete Account?", subtitle: "This action cannot be undone.")
+    .horizontalAction(actions: [
+        ActionConfig(title: "Cancel", style: .outlined(color: .systemGray)),
+        ActionConfig(title: "Delete", style: .filled(color: .systemRed))
+    ])
+    .show()
+```
+
 ### Text Input Component
 
 Add text input fields with real-time validation and formatting:
@@ -199,6 +211,20 @@ Add text input fields with real-time validation and formatting:
 
 ## Button Styles
 
+### Custom Colors
+Create a button with customized text, background, and border colors:
+```swift
+.action(
+    title: "Got it!",
+    style: .custom(
+        textColor: .white,
+        backgroundColor: .systemPurple,
+        borderColor: .black
+    ),
+    width: .dynamic
+)
+```
+
 ### Filled Style
 ```swift
 .action(title: "Save", style: .filled(color: .blue), width: .dynamic)
@@ -228,18 +254,45 @@ Specific width in points:
 .action(title: "Fixed", style: .filled(color: .blue), width: .fixed(200))
 ```
 
+### Full Width
+Takes the entire width of the card:
+```swift
+.action(title: "Full Width", style: .filled(color: .blue), width: .full)
+```
+
 ## Dismiss Button
 
 Configure the dismiss button (X) in the top-right corner:
 
 ```swift
 MGCard()
+    .cardStyle(backgroundColor: .systemGray6, borderColor: .systemBlue, borderWidth: 2)
     .hasDismissButton(true)
     .dismissButtonAction {
         print("User dismissed the alert")
         // Custom dismiss logic here
     }
     // ... other components
+    .show()
+```
+
+## Overlay Style
+
+The background overlay behind the card can be customized using the `.overlay` modifier. By default, MGCard uses a dimmed background with 25% opacity, but you can also use a blurred overlay!
+
+### Dimmed Overlay
+```swift
+MGCard()
+    .overlay(style: .dimmed(alpha: 0.25)) // This is the default
+    .text(title: "Dimmed Overlay")
+    .show()
+```
+
+### Blurred Overlay
+```swift
+MGCard()
+    .overlay(style: .blur) // Uses a system material dark blur effect
+    .text(title: "Blurred Overlay")
     .show()
 ```
 
