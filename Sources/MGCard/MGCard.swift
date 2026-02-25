@@ -296,6 +296,65 @@ public final class MGCard: UIView {
         return append(actionComponent)
     }
     
+    /// Adds multiple action buttons arranged horizontally
+    /// - Parameters:
+    ///   - actions: An array of ActionConfig configurations representing each intended button
+    ///   - spacing: Spacing between the buttons (default: 8)
+    ///   - height: Height of the buttons (default: 35)
+    ///   - width: Top-level width configuration (default: .full)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func horizontalActions(
+        actions: [ActionConfig],
+        spacing: CGFloat = 8,
+        height: CGFloat = 35,
+        width: WidthStyle = .full
+    ) -> MGCard {
+        let mapStyle: (ButtonStyle) -> AlertAction.ButtonStyle = { style in
+            switch style {
+            case .filled(let color): return .filled(color: color)
+            case .outlined(let color): return .outlined(color: color)
+            case .clear(let color): return .clear(color: color)
+            case .custom(let textColor, let backgroundColor, let borderColor):
+                return .custom(textColor: textColor, backgroundColor: backgroundColor, borderColor: borderColor)
+            }
+        }
+        
+        let mapWidth: (WidthStyle) -> AlertAction.WidthStyle = { w in
+            switch w {
+            case .fixed(let value): return .fixed(value)
+            case .dynamic: return .dynamic
+            case .full: return .full
+            }
+        }
+        
+        var parsedActions: [AlertAction] = []
+        
+        for config in actions {
+            // Force .dynamic width for inner buttons so the horizontal stack view (which is .full) 
+            // can distribute the available width properly via .fillEqually
+            let alertAction = AlertAction(
+                title: config.title,
+                style: mapStyle(config.style),
+                width: .dynamic,
+                height: height,
+                icon: config.icon,
+                canDismissAlert: config.canDismissAlert,
+                font: config.font ?? UIFont.systemFont(ofSize: 16, weight: .medium),
+                action: config.action
+            )
+            parsedActions.append(alertAction)
+        }
+        
+        let horizontalComponent = AlertHorizontalAction(
+            actions: parsedActions,
+            spacing: spacing,
+            width: mapWidth(width)
+        )
+        
+        return append(horizontalComponent)
+    }
+    
     /// Adds a text input component to the card
     /// - Parameters:
     ///   - placeholder: Placeholder text for the input field

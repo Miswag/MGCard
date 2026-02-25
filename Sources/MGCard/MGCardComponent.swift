@@ -18,7 +18,7 @@ public enum ButtonStyle {
     /// Clear button with text color only
     case clear(color: UIColor)
     /// Custom button with dynamic text, background, and border colors
-    case custom(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor?)
+    case custom(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor? = nil)
 }
 
 /// Overlay styling options for the background dimming view
@@ -37,6 +37,32 @@ public enum WidthStyle {
     case dynamic
     /// Full width of the card
     case full
+}
+
+/// Configuration structure for defining an action within a horizontal stack
+public struct ActionConfig {
+    public let title: String
+    public let style: ButtonStyle
+    public let icon: String?
+    public let font: UIFont?
+    public let canDismissAlert: Bool
+    public let action: (() -> Void)?
+    
+    public init(
+        title: String,
+        style: ButtonStyle = .filled(color: .systemBlue),
+        icon: String? = nil,
+        font: UIFont? = nil,
+        canDismissAlert: Bool = true,
+        action: (() -> Void)? = nil
+    ) {
+        self.title = title
+        self.style = style
+        self.icon = icon
+        self.font = font
+        self.canDismissAlert = canDismissAlert
+        self.action = action
+    }
 }
 
 // MARK: - AlertComponent Protocol
@@ -459,5 +485,61 @@ internal final class AlertTextView: NSObject, AlertComponent, UITextViewDelegate
             textView.text = placeholder
             textView.textColor = .placeholderText
         }
+    }
+}
+
+// MARK: - AlertHorizontalAction
+
+internal final class HorizontalStackedActionView: UIStackView {
+    private let widthStyle: AlertAction.WidthStyle
+    
+    init(widthStyle: AlertAction.WidthStyle) {
+        self.widthStyle = widthStyle
+        super.init(frame: .zero)
+    }
+    
+    required init(coder: NSCoder) {
+        fatalError("init(coder:) has not been implemented")
+    }
+    
+    override func didMoveToSuperview() {
+        super.didMoveToSuperview()
+        if case .full = widthStyle, let superview = superview {
+            widthAnchor.constraint(equalTo: superview.layoutMarginsGuide.widthAnchor).isActive = true
+        }
+    }
+}
+
+/// A container that stacks multiple action buttons horizontally
+internal final class AlertHorizontalAction: AlertComponent {
+    
+    private let actions: [AlertAction]
+    private let spacing: CGFloat
+    private let width: AlertAction.WidthStyle
+    
+    internal init(
+        actions: [AlertAction],
+        spacing: CGFloat = 8,
+        width: AlertAction.WidthStyle = .full
+    ) {
+        self.actions = actions
+        self.spacing = spacing
+        self.width = width
+    }
+    
+    internal func renderComponent(dismissHandler: @escaping () -> Void) -> UIView {
+        let stackView = HorizontalStackedActionView(widthStyle: width)
+        stackView.axis = .horizontal
+        stackView.spacing = spacing
+        stackView.distribution = .fillEqually
+        stackView.alignment = .fill
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        
+        for action in actions {
+            let view = action.renderComponent(dismissHandler: dismissHandler)
+            stackView.addArrangedSubview(view)
+        }
+        
+        return stackView
     }
 }

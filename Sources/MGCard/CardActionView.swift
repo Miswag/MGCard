@@ -110,6 +110,7 @@ internal final class CardActionView: UIView {
     private func setupTitleLabel(title: String) {
         titleLabel.text = title
         titleLabel.font = font
+        titleLabel.textAlignment = .center
         stackView.addArrangedSubview(titleLabel)
     }
     

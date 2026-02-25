@@ -168,6 +168,18 @@ Create interactive buttons with various styles:
 )
 ```
 
+### Horizontal Actions
+You can easily arrange multiple action buttons side-by-side using `.horizontalAction` and passing an array of `ActionConfig`:
+```swift
+MGCard()
+    .text(title: "Delete Account?", subtitle: "This action cannot be undone.")
+    .horizontalAction(actions: [
+        ActionConfig(title: "Cancel", style: .outlined(color: .systemGray)),
+        ActionConfig(title: "Delete", style: .filled(color: .systemRed))
+    ])
+    .show()
+```
+
 ### Text Input Component
 
 Add text input fields with real-time validation and formatting:
