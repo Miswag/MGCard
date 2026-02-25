@@ -263,6 +263,26 @@ MGCard()
     .show()
 ```
 
+## Overlay Style
+
+The background overlay behind the card can be customized using the `.overlay` modifier. By default, MGCard uses a dimmed background with 25% opacity, but you can also use a blurred overlay!
+
+### Dimmed Overlay
+```swift
+MGCard()
+    .overlay(style: .dimmed(alpha: 0.25)) // This is the default
+    .text(title: "Dimmed Overlay")
+    .show()
+```
+
+### Blurred Overlay
+```swift
+MGCard()
+    .overlay(style: .blur) // Uses a system material dark blur effect
+    .text(title: "Blurred Overlay")
+    .show()
+```
+
 ## Advanced Examples
 
 ### Multi-Component Alert

@@ -21,6 +21,14 @@ public enum ButtonStyle {
     case custom(textColor: UIColor?, backgroundColor: UIColor?, borderColor: UIColor?)
 }
 
+/// Overlay styling options for the background dimming view
+public enum OverlayStyle {
+    /// Solid color dimming with specified alpha
+    case dimmed(alpha: CGFloat)
+    /// Blurred background effect
+    case blur
+}
+
 /// Width configuration options for action components
 public enum WidthStyle {
     /// Fixed width in points
