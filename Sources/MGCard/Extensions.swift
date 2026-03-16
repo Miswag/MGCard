@@ -43,7 +43,7 @@ extension UIImage {
     ) -> UIImage? {
         
         // First try to load from bundle (custom assets)
-        if let bundleImage = UIImage(named: icon, in: bundle, compatible_with: nil) {
+        if let bundleImage = UIImage(named: icon, in: bundle, compatibleWith: nil) {
             return bundleImage.withRenderingMode(renderingMode)
         }
         
