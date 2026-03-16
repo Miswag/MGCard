@@ -19,6 +19,7 @@ extension UIImage {
     /// 
     /// - Parameters:
     ///   - icon: The name of the image to load. Can be a custom asset name or SF Symbol name
+    ///   - bundle: The bundle containing the image (defaults to .main)
     ///   - renderingMode: The rendering mode to apply to the loaded image (default: .alwaysTemplate)
     ///   - fallBackIcon: The SF Symbol name to use if the primary icon is not found (default: "questionmark.circle.fill")
     /// - Returns: The requested UIImage if available, otherwise the fallback system image
@@ -36,12 +37,13 @@ extension UIImage {
     /// ```
     static func fetch(
         _ icon: String,
+        in bundle: Bundle = .main,
         usingRenderingMode renderingMode: RenderingMode = .alwaysTemplate,
         fallBackIcon: String = "questionmark.circle.fill"
     ) -> UIImage? {
         
         // First try to load from bundle (custom assets)
-        if let bundleImage = UIImage(named: icon, in: Bundle.main, compatibleWith: nil) {
+        if let bundleImage = UIImage(named: icon, in: bundle, compatible_with: nil) {
             return bundleImage.withRenderingMode(renderingMode)
         }
         

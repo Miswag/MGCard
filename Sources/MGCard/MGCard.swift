@@ -173,6 +173,7 @@ public final class MGCard: UIView {
     /// Adds an image component to the card
     /// - Parameters:
     ///   - name: The name of the image (system icon or asset name)
+    ///   - bundle: The bundle containing the image (default: .main)
     ///   - width: The width of the image in points
     ///   - height: The height of the image in points
     ///   - scale: The content mode for image scaling (default: .scaleAspectFill)
@@ -182,6 +183,7 @@ public final class MGCard: UIView {
     @discardableResult
     public func image(
         name: String,
+        bundle: Bundle = .main,
         width: CGFloat,
         height: CGFloat,
         scale: UIView.ContentMode = .scaleAspectFill,
@@ -190,6 +192,7 @@ public final class MGCard: UIView {
     ) -> MGCard {
         let imageComponent = AlertImage(
             imageName: name,
+            bundle: bundle,
             imageScale: scale,
             imageWidth: width,
             imageHeight: height,

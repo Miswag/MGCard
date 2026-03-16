@@ -153,6 +153,7 @@ internal final class AlertImage: AlertComponent {
     // MARK: - Properties
     
     private let imageName: String
+    private let bundle: Bundle
     private let imageScale: UIView.ContentMode
     private let imageWidth: CGFloat
     private let imageHeight: CGFloat
@@ -164,6 +165,7 @@ internal final class AlertImage: AlertComponent {
     /// Creates a new image component
     /// - Parameters:
     ///   - imageName: Name of the image (system icon or asset)
+    ///   - bundle: The bundle containing the image (default: .main)
     ///   - imageScale: Content mode for scaling (default: .scaleAspectFill)
     ///   - imageWidth: Width of the image in points (default: 50)
     ///   - imageHeight: Height of the image in points (default: 50)
@@ -171,6 +173,7 @@ internal final class AlertImage: AlertComponent {
     ///   - tintColor: Optional tint color for the image
     internal init(
         imageName: String,
+        bundle: Bundle = .main,
         imageScale: UIView.ContentMode = .scaleAspectFill,
         imageWidth: CGFloat = 50,
         imageHeight: CGFloat = 50,
@@ -178,6 +181,7 @@ internal final class AlertImage: AlertComponent {
         tintColor: UIColor? = nil
     ) {
         self.imageName = imageName
+        self.bundle = bundle
         self.imageScale = imageScale
         self.imageWidth = imageWidth
         self.imageHeight = imageHeight
@@ -188,7 +192,7 @@ internal final class AlertImage: AlertComponent {
     // MARK: - AlertComponent
     
     internal func renderComponent(dismissHandler: @escaping () -> Void) -> UIView {
-        let imageView = UIImageView(image: UIImage.fetch(imageName, usingRenderingMode: renderingMode))
+        let imageView = UIImageView(image: UIImage.fetch(imageName, in: bundle, usingRenderingMode: renderingMode))
         imageView.clipsToBounds = true
         imageView.layer.masksToBounds = true
         imageView.contentMode = imageScale
