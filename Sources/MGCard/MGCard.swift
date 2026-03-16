@@ -199,6 +199,32 @@ public final class MGCard: UIView {
         return append(imageComponent)
     }
     
+    /// Adds a Lottie animation component to the card
+    /// - Parameters:
+    ///   - name: The name of the Lottie animation file
+    ///   - bundle: The bundle containing the animation file (default: .main)
+    ///   - width: The width of the animation in points (default: 240)
+    ///   - height: The height of the animation in points (default: 130)
+    ///   - scale: The content mode for animation scaling (default: .scaleAspectFit)
+    /// - Returns: Self for method chaining
+    @discardableResult
+    public func gif(
+        name: String,
+        bundle: Bundle = .main,
+        width: CGFloat = 240,
+        height: CGFloat = 130,
+        scale: UIView.ContentMode = .scaleAspectFit
+    ) -> MGCard {
+        let gifComponent = AlertGif(
+            name: name,
+            bundle: bundle,
+            scale: scale,
+            width: width,
+            height: height
+        )
+        return append(gifComponent)
+    }
+    
     /// Adds a text component with optional title and subtitle
     /// - Parameters:
     ///   - title: The main text to display

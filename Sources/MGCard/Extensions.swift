@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import Lottie
 
 // MARK: - UIImage Extensions
 
@@ -51,5 +52,27 @@ extension UIImage {
         
         // Finally fall back to the fallback icon
         return UIImage(systemName: fallBackIcon)?.withRenderingMode(renderingMode)
+    }
+}
+
+// MARK: - LottieAnimation Extensions
+
+extension LottieAnimation {
+    /// Returns a `LottieAnimation` object from the module's bundle.
+    ///
+    /// This method looks for a Lottie animation file with the given name in the module's bundle.
+    /// If the animation is not found, it prints an error message and returns `nil`.
+    ///
+    /// - Parameters:
+    ///   - named: The name of the Lottie animation file (without the file extension).
+    ///   - bundle: The bundle containing the animation file (defaults to .main).
+    /// - Returns: A `LottieAnimation` object if found, or `nil` if the file could not be located.
+    public static func returnLottieFile(named: String, in bundle: Bundle = .main) -> LottieAnimation? {
+        guard let animation = LottieAnimation.named(named, bundle: bundle) else {
+            print("❌ Animation not found: \(named) in bundle: \(bundle)")
+            return nil
+        }
+        
+        return animation
     }
 }
