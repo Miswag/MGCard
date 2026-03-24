@@ -89,6 +89,7 @@ public final class MGCard: UIView {
     private var cardBorderWidth: CGFloat = 0
     private var cardHorizontalPadding: CGFloat = 20
     private var activeBlurView: UIVisualEffectView?
+    private var containerWidthConstraint: NSLayoutConstraint?
     
     /// SwiftUI integration callback for dismiss events
     internal var onDismiss: (() -> Void)?
@@ -549,6 +550,8 @@ public final class MGCard: UIView {
         } else {
             alertContainerStackView.layer.borderWidth = 0
         }
+        
+        containerWidthConstraint?.constant = -(cardHorizontalPadding * 2)
     }
     
     private func setupWindow(in windowScene: UIWindowScene) {
@@ -625,10 +628,13 @@ public final class MGCard: UIView {
         alertContainerStackView.translatesAutoresizingMaskIntoConstraints = false
         addSubview(alertContainerStackView)
         
+        let widthConstraint = alertContainerStackView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -(cardHorizontalPadding * 2))
+        self.containerWidthConstraint = widthConstraint
+        
         NSLayoutConstraint.activate([
             alertContainerStackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             alertContainerStackView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            alertContainerStackView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -(cardHorizontalPadding * 2))
+            widthConstraint
         ])
     }
     
