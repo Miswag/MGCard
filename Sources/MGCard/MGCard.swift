@@ -602,10 +602,9 @@ public final class MGCard: UIView {
     }
     
     private func setupDismissButton() {
-        
         if #available(iOS 15.0, *) {
             let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular, scale: .default)
-                .applying(UIImage.SymbolConfiguration(hierarchicalColor: UIColor.systemGray2))
+                .applying(UIImage.SymbolConfiguration(hierarchicalColor: UIColor.systemGray))
             
             if let image = UIImage(systemName: "xmark.square", withConfiguration: config) {
                 dismissButton.setImage(image, for: .normal)
@@ -743,6 +742,10 @@ public final class MGCard: UIView {
     // MARK: - Dismissal
     
     @objc private func dismissButtonTapped() {
+        let generator = UIImpactFeedbackGenerator(style: .soft)
+        generator.prepare()
+        generator.impactOccurred()
+        
         dismissButtonCompletion?()
         removeAlertWithAnimation()
     }
