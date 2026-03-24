@@ -87,6 +87,7 @@ public final class MGCard: UIView {
     private var cardBackgroundColor: UIColor = .white
     private var cardBorderColor: UIColor?
     private var cardBorderWidth: CGFloat = 0
+    private var cardHorizontalPadding: CGFloat = 20
     private var activeBlurView: UIVisualEffectView?
     
     /// SwiftUI integration callback for dismiss events
@@ -127,16 +128,19 @@ public final class MGCard: UIView {
     ///   - backgroundColor: The background color of the card (default: .white)
     ///   - borderColor: The Optional border color for the card
     ///   - borderWidth: The border width applied if color is provided (default: 1.0)
+    ///   - horizontalPadding: Padding between the card and the screen edges (default: 20)
     /// - Returns: Self for method chaining
     @discardableResult
     public func cardStyle(
         backgroundColor: UIColor = .white,
         borderColor: UIColor? = nil,
-        borderWidth: CGFloat = 1.0
+        borderWidth: CGFloat = 1.0,
+        horizontalPadding: CGFloat = 20
     ) -> MGCard {
         self.cardBackgroundColor = backgroundColor
         self.cardBorderColor = borderColor
         self.cardBorderWidth = borderWidth
+        self.cardHorizontalPadding = horizontalPadding
         self.applyCardStyle()
         return self
     }
@@ -598,8 +602,19 @@ public final class MGCard: UIView {
     }
     
     private func setupDismissButton() {
-        dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
-        dismissButton.tintColor = .label
+        
+        if #available(iOS 15.0, *) {
+            let config = UIImage.SymbolConfiguration(pointSize: 18, weight: .regular, scale: .default)
+                .applying(UIImage.SymbolConfiguration(hierarchicalColor: UIColor.systemGray2))
+            
+            if let image = UIImage(systemName: "xmark.square", withConfiguration: config) {
+                dismissButton.setImage(image, for: .normal)
+            }
+        } else {
+            dismissButton.setImage(UIImage(systemName: "xmark"), for: .normal)
+            dismissButton.tintColor = .label
+        }
+        
         dismissButton.translatesAutoresizingMaskIntoConstraints = false
         dismissButton.addTarget(self, action: #selector(dismissButtonTapped), for: .touchUpInside)
     }
@@ -614,7 +629,7 @@ public final class MGCard: UIView {
         NSLayoutConstraint.activate([
             alertContainerStackView.centerXAnchor.constraint(equalTo: self.centerXAnchor),
             alertContainerStackView.centerYAnchor.constraint(equalTo: self.centerYAnchor),
-            alertContainerStackView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -40)
+            alertContainerStackView.widthAnchor.constraint(equalTo: self.widthAnchor, constant: -(cardHorizontalPadding * 2))
         ])
     }
     
@@ -624,10 +639,10 @@ public final class MGCard: UIView {
         if showDismissButton {
             alertContainerStackView.addSubview(dismissButton)
             NSLayoutConstraint.activate([
-                dismissButton.topAnchor.constraint(equalTo: alertContainerStackView.topAnchor, constant: 20),
-                dismissButton.trailingAnchor.constraint(equalTo: alertContainerStackView.trailingAnchor, constant: -20),
-                dismissButton.widthAnchor.constraint(equalToConstant: 20),
-                dismissButton.heightAnchor.constraint(equalToConstant: 20)
+                dismissButton.topAnchor.constraint(equalTo: alertContainerStackView.topAnchor),
+                dismissButton.trailingAnchor.constraint(equalTo: alertContainerStackView.trailingAnchor),
+                dismissButton.widthAnchor.constraint(equalToConstant: 40),
+                dismissButton.heightAnchor.constraint(equalToConstant: 40)
             ])
         }
     }
