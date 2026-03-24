@@ -10,6 +10,12 @@ import Lottie
 
 // MARK: - Public Enums
 
+/// Shape options for the image background
+public enum ImageBackgroundShape {
+    case circle
+    case rounded(cornerRadius: CGFloat)
+}
+
 /// Button styling options for action components
 public enum ButtonStyle {
     /// Filled button with background color
@@ -159,6 +165,7 @@ internal final class AlertImage: AlertComponent {
     private let imageHeight: CGFloat
     private let renderingMode: UIImage.RenderingMode
     private let tintColor: UIColor?
+    private let background: (height: CGFloat, width: CGFloat, color: UIColor, shape: ImageBackgroundShape)?
     
     // MARK: - Initialization
     
@@ -178,7 +185,8 @@ internal final class AlertImage: AlertComponent {
         imageWidth: CGFloat = 50,
         imageHeight: CGFloat = 50,
         renderingMode: UIImage.RenderingMode = .alwaysOriginal,
-        tintColor: UIColor? = nil
+        tintColor: UIColor? = nil,
+        background: (height: CGFloat, width: CGFloat, color: UIColor, shape: ImageBackgroundShape)? = nil
     ) {
         self.imageName = imageName
         self.bundle = bundle
@@ -187,6 +195,7 @@ internal final class AlertImage: AlertComponent {
         self.imageHeight = imageHeight
         self.renderingMode = renderingMode
         self.tintColor = tintColor
+        self.background = background
     }
     
     // MARK: - AlertComponent
@@ -203,12 +212,39 @@ internal final class AlertImage: AlertComponent {
             imageView.tintColor = tintColor
         }
         
-        NSLayoutConstraint.activate([
-            imageView.widthAnchor.constraint(equalToConstant: imageWidth),
-            imageView.heightAnchor.constraint(equalToConstant: imageHeight)
-        ])
-        
-        return imageView
+        if let background = background {
+            let containerView = UIView()
+            containerView.translatesAutoresizingMaskIntoConstraints = false
+            containerView.backgroundColor = background.color
+            
+            switch background.shape {
+            case .circle:
+                containerView.layer.cornerRadius = min(background.width, background.height) / 2
+            case .rounded(let cornerRadius):
+                containerView.layer.cornerRadius = cornerRadius
+            }
+            containerView.clipsToBounds = true
+            
+            containerView.addSubview(imageView)
+            
+            NSLayoutConstraint.activate([
+                containerView.widthAnchor.constraint(equalToConstant: background.width),
+                containerView.heightAnchor.constraint(equalToConstant: background.height),
+                imageView.centerXAnchor.constraint(equalTo: containerView.centerXAnchor),
+                imageView.centerYAnchor.constraint(equalTo: containerView.centerYAnchor),
+                imageView.widthAnchor.constraint(equalToConstant: imageWidth),
+                imageView.heightAnchor.constraint(equalToConstant: imageHeight)
+            ])
+            
+            return containerView
+        } else {
+            NSLayoutConstraint.activate([
+                imageView.widthAnchor.constraint(equalToConstant: imageWidth),
+                imageView.heightAnchor.constraint(equalToConstant: imageHeight)
+            ])
+            
+            return imageView
+        }
     }
 }
 

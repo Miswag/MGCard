@@ -179,6 +179,7 @@ public final class MGCard: UIView {
     ///   - scale: The content mode for image scaling (default: .scaleAspectFill)
     ///   - renderingMode: The rendering mode for the image (default: .alwaysOriginal)
     ///   - tintColor: Optional tint color for the image (works best with .alwaysTemplate rendering mode)
+    ///   - background: Optional background for the image
     /// - Returns: Self for method chaining
     @discardableResult
     public func image(
@@ -188,7 +189,8 @@ public final class MGCard: UIView {
         height: CGFloat,
         scale: UIView.ContentMode = .scaleAspectFill,
         renderingMode: UIImage.RenderingMode = .alwaysOriginal,
-        tintColor: UIColor? = nil
+        tintColor: UIColor? = nil,
+        background: (height: CGFloat, width: CGFloat, color: UIColor, shape: ImageBackgroundShape)? = nil
     ) -> MGCard {
         let imageComponent = AlertImage(
             imageName: name,
@@ -197,7 +199,8 @@ public final class MGCard: UIView {
             imageWidth: width,
             imageHeight: height,
             renderingMode: renderingMode,
-            tintColor: tintColor
+            tintColor: tintColor,
+            background: background
         )
         return append(imageComponent)
     }
