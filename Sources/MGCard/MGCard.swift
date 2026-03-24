@@ -552,6 +552,11 @@ public final class MGCard: UIView {
         alertWindow?.windowLevel = .alert + 1
         alertWindow?.backgroundColor = .clear
         
+        // Inherit the app's user interface style
+        if let mainWindow = windowScene.windows.first(where: { $0.isKeyWindow }) ?? windowScene.windows.first {
+            alertWindow?.overrideUserInterfaceStyle = mainWindow.overrideUserInterfaceStyle
+        }
+        
         let rootViewController = UIViewController()
         rootViewController.view.backgroundColor = .clear
         alertWindow?.rootViewController = rootViewController
