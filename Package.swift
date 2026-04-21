@@ -14,15 +14,11 @@ let package = Package(
             targets: ["MGCard"]
         ),
     ],
-    dependencies: [
-        .package(url: "https://github.com/airbnb/lottie-spm.git", from: "4.6.0")
-    ],
+    dependencies: [],
     targets: [
         .target(
             name: "MGCard",
-            dependencies: [
-                .product(name: "Lottie", package: "lottie-spm")
-            ],
+            dependencies: [],
             resources: []
         )
     ]

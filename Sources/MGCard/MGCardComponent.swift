@@ -6,7 +6,6 @@
 //
 
 import UIKit
-import Lottie
 
 // MARK: - Public Enums
 
@@ -582,59 +581,5 @@ internal final class AlertHorizontalAction: AlertComponent {
         }
         
         return stackView
-    }
-}
-
-// MARK: - AlertGif
-
-/// Gif component for displaying Lottie animations with customizable sizing and scaling
-internal final class AlertGif: AlertComponent {
-    
-    // MARK: - Properties
-    
-    private let gifName: String
-    private let bundle: Bundle
-    private let imageScale: UIView.ContentMode
-    private let imageWidth: CGFloat
-    private let imageHeight: CGFloat
-    
-    // MARK: - Initialization
-    
-    /// Creates a new gif component
-    /// - Parameters:
-    ///   - name: Name of the Lottie animation file
-    ///   - bundle: The bundle containing the animation file (default: .main)
-    ///   - scale: Content mode for scaling (default: .scaleAspectFit)
-    ///   - width: Width of the animation in points (default: 240)
-    ///   - height: Height of the animation in points (default: 130)
-    internal init(
-        name: String,
-        bundle: Bundle = .main,
-        scale: UIView.ContentMode = .scaleAspectFit,
-        width: CGFloat = 240,
-        height: CGFloat = 130
-    ) {
-        self.gifName = name
-        self.bundle = bundle
-        self.imageScale = scale
-        self.imageWidth = width
-        self.imageHeight = height
-    }
-    
-    // MARK: - AlertComponent
-    
-    internal func renderComponent(dismissHandler: @escaping () -> Void) -> UIView {
-        let animation = LottieAnimation.returnLottieFile(named: gifName, in: bundle)
-        let lottieView = LottieAnimationView(animation: animation)
-        lottieView.contentMode = imageScale
-        lottieView.loopMode = .loop
-        lottieView.play()
-        
-        lottieView.translatesAutoresizingMaskIntoConstraints = false
-        NSLayoutConstraint.activate([
-            lottieView.widthAnchor.constraint(equalToConstant: imageWidth),
-            lottieView.heightAnchor.constraint(equalToConstant: imageHeight)
-        ])
-        return lottieView
     }
 }
